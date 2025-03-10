@@ -6,15 +6,13 @@
 #define SCREEN_HEIGHT 600
 #define MAX_POINTS 8
 
-// Kontrollpontok
 SDL_Point controlPoints[MAX_POINTS] = {
     {50, 100}, {150, 50}, {250, 150}, {350, 100},
     {450, 200}, {550, 100}, {650, 50}, {750, 150}
 };
 
-int degree = 3; // Alapértelmezett fokszám
+int degree = 3;
 
-// B-Spline görbepontok számítása
 void GenerateBSpline(SDL_Point *curvePoints, int *curveSize) {
     *curveSize = 0;
     for (int i = 0; i < MAX_POINTS - degree; i++) {

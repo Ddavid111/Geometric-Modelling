@@ -58,7 +58,7 @@ def update(frame):
         normal = calculate_normal(position, control_points)
         velocity = reflect_velocity(velocity, normal)
     
-    position += velocity * 0.1
+    position += velocity * 0.05
     
     scat.set_offsets(position)
     return scat,

@@ -16,14 +16,14 @@ control_points = np.array([
     [1, 1], [3, 5], [7, 4], [8, 2], [6, 0], [3, 0], [1, 1]
 ])
 
-t_vals = np.linspace(0, 1, 100)
+t_vals = np.linspace(0, 1, 1000)
 curve_points = np.array([bezier_curve(control_points, t) for t in t_vals])
 
 position = np.array([4.0, 3.0])
 velocity = np.array([0.5, -0.4])
 
 def check_collision(position, velocity, control_points):
-    t_vals = np.linspace(0, 1, 100)
+    t_vals = np.linspace(0, 1, 1000)
     closest_t = None
     closest_dist = float('inf')
     for t in t_vals:
@@ -36,7 +36,8 @@ def check_collision(position, velocity, control_points):
     return closest_t
 
 def reflect_velocity(velocity, normal):
-    return velocity - 2 * np.dot(velocity, normal) * normal
+    reflected_velocity = velocity - 2 * np.dot(velocity, normal) * normal
+    return reflected_velocity * 0.9
 
 def calculate_normal(position, control_points):
     t = check_collision(position, velocity, control_points)

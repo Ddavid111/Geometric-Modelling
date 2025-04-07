@@ -4,17 +4,29 @@ from matplotlib.patches import Polygon
 from matplotlib.animation import FuncAnimation
 from bezier import bezier_curve
 from animation import BouncingPoint
+import json
 
 
 def main():
     """
     Elindítja a Bézier-görbén pattogó pont animációját.
-
-    Beállítja a görbét, a mozgó pontot és elindítja a matplotlib animációt.
+    A kontrollpontokat JSON fájlból olvassa be.
     """
-    control_points = np.array([
-        [1, 1], [3, 5], [7, 4], [8, 2], [6, 0], [3, 0], [1, 1]
-    ])
+
+    with open("Feleves_feladat/control_points.json", "r") as f:
+        data = json.load(f)
+
+    print("Elérhető kontrollpont készletek:")
+    for key in data:
+        print(f" - {key}")
+    
+    choice = input("Melyik kontrollpont készletet szeretnéd használni? (pl. set1): ").strip()
+    if choice not in data:
+        print(f"Ismeretlen készlet: {choice}, az alapértelmezett 'set1' lesz használva.")
+        choice = "set1"
+
+    control_points = np.array(data[choice])
+
     curve_points = np.array([bezier_curve(control_points, t) for t in np.linspace(0, 1, 1000)])
     point = BouncingPoint([4.0, 3.0], [0.5, -0.4], control_points)
 
@@ -27,7 +39,7 @@ def main():
 
     scat = ax.scatter(*point.position, color='red', s=100, label="Pattogó pont")
     ax.set_xlim(-1, 10)
-    ax.set_ylim(-1, 6)
+    ax.set_ylim(-3, 7)
     ax.legend()
 
     def animate(frame):
@@ -37,6 +49,7 @@ def main():
 
     ani = FuncAnimation(fig, animate, frames=600, interval=16, blit=True)
     plt.show()
+
 
 if __name__ == "__main__":
     main()

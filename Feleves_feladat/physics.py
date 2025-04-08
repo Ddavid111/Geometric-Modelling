@@ -1,27 +1,41 @@
 import numpy as np
-from bezier import bezier_curve
+from bezier import bezier_curve, bezier_derivative
 
-def check_collision(position, control_points):
+SAMPLE_RESOLUTION = 1000  # Globális konstans a mintavételezéshez
+COLLISION_THRESHOLD = 0.1  # Ütközési küszöb
+
+def find_curve_collision(start_pos, end_pos, control_points, samples=SAMPLE_RESOLUTION):
     """
-    Ellenőrzi, hogy a mozgó pont közel van-e a Bézier-görbéhez.
+    Megkeresi, hogy a pont útvonala metszi-e a Bézier-görbét.
 
     Args:
-        position (np.ndarray): A pont aktuális pozíciója [x, y].
+        start_pos (np.ndarray): Kiinduló pozíció.
+        end_pos (np.ndarray): Cél pozíció.
         control_points (np.ndarray): A Bézier-görbe kontrollpontjai.
+        samples (int): Mintavételezési felbontás.
 
     Returns:
-        float or None: Az a t paraméterérték, ahol a legközelebbi pont van a görbén, vagy None ha nincs ütközés.
+        float or None: Az ütközéshez legközelebbi t érték, vagy None ha nincs ütközés.
     """
-    t_vals = np.linspace(0, 1, 1000)
-    closest_t = None
-    closest_dist = float('inf')
+    t_vals = np.linspace(0, 1, samples)
+    min_dist = float('inf')
+    best_t = None
+    motion_vec = end_pos - start_pos
+    seg_length = np.linalg.norm(motion_vec)
+
+    if seg_length == 0:
+        return None
+
     for t in t_vals:
         curve_point = bezier_curve(control_points, t)
-        dist = np.linalg.norm(position - curve_point)
-        if dist < 0.1 and dist < closest_dist:
-            closest_dist = dist
-            closest_t = t
-    return closest_t
+        to_curve = curve_point - start_pos
+        proj = np.dot(to_curve, motion_vec) / seg_length
+        if 0 <= proj <= seg_length:
+            dist = np.linalg.norm(np.cross(motion_vec, to_curve) / seg_length)
+            if dist < COLLISION_THRESHOLD and dist < min_dist:
+                min_dist = dist
+                best_t = t
+    return best_t
 
 def reflect_velocity(velocity, normal):
     """
@@ -36,23 +50,20 @@ def reflect_velocity(velocity, normal):
     """
     return (velocity - 2 * np.dot(velocity, normal) * normal) * 0.9
 
-def calculate_normal(position, velocity, control_points):
+def calculate_normal(t, control_points):
     """
-    Kiszámítja a Bézier-görbéhez tartozó normálvektort az adott pozíciónál, ha van ütközés.
+    Kiszámítja a normálvektort a görbén a t paraméterhez tartozó pontnál.
 
     Args:
-        position (np.ndarray): A mozgó pont pozíciója.
-        velocity (np.ndarray): A pont aktuális sebességvektora.
+        t (float): Paraméterérték az ütközési pontnál.
         control_points (np.ndarray): A Bézier-görbe kontrollpontjai.
 
     Returns:
-        np.ndarray: Az ütközési pontnál számított egységnyi normálvektor, vagy [0, 0] ha nincs ütközés.
+        np.ndarray or None: Egységnyi normálvektor, vagy None ha nem számítható.
     """
-    t = check_collision(position, control_points)
-    if t is None:
-        return np.array([0, 0])
-    curve_point = bezier_curve(control_points, t)
-    next_point = bezier_curve(control_points, min(t + 0.01, 1.0))
-    tangent = next_point - curve_point
+    derivative = bezier_derivative(control_points, t)
+    if np.linalg.norm(derivative) == 0:
+        return None
+    tangent = derivative / np.linalg.norm(derivative)
     normal = np.array([-tangent[1], tangent[0]])
     return normal / np.linalg.norm(normal)

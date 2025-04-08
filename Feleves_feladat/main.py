@@ -19,7 +19,6 @@ def main():
     print("Elérhető kontrollpont készletek:")
     for key in data:
         print(f" - {key}")
-    
     choice = input("Melyik kontrollpont készletet szeretnéd használni? (pl. set1): ").strip()
     if choice not in data:
         print(f"Ismeretlen készlet: {choice}, az alapértelmezett 'set1' lesz használva.")

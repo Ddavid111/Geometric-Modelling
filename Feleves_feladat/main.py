@@ -1,10 +1,15 @@
+# Standard library
+import json
+
+# Third-party library
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from matplotlib.animation import FuncAnimation
+
+# Saját modulok
 from bezier import bezier_curve
 from animation import BouncingPoint
-import json
 
 
 def main():
@@ -27,7 +32,11 @@ def main():
     control_points = np.array(data[choice])
 
     curve_points = np.array([bezier_curve(control_points, t) for t in np.linspace(0, 1, 1000)])
-    point = BouncingPoint([4.0, 3.0], [0.5, -0.4], control_points)
+    points = [
+    BouncingPoint([4.0, 3.0], [1.0, -0.8], control_points),
+    BouncingPoint([5.0, 2.0], [-0.3, 0.5], control_points),
+    BouncingPoint([3.0, 2.0], [0.2, 0.6], control_points)
+    ]
 
     fig, ax = plt.subplots()
     fig.canvas.manager.set_window_title("Bézier-Görbe Animáció")
@@ -36,17 +45,18 @@ def main():
     ax.add_patch(polygon)
     ax.plot(curve_points[:, 0], curve_points[:, 1], color='blue', linewidth=2, label="Zárt Bézier-görbe")
 
-    scat = ax.scatter(*point.position, color='red', s=100, label="Pattogó pont")
+    scats = [ax.scatter(*p.position, s=100, label=f"Pattogó pont {i+1}") for i, p in enumerate(points)]
     ax.set_xlim(-1, 10)
     ax.set_ylim(-3, 7)
     ax.legend()
 
     def animate(frame):
-        pos = point.update()
-        scat.set_offsets(pos)
-        return scat,
+        for point, scat in zip(points, scats):
+            pos = point.update() 
+            scat.set_offsets(pos)
+        return scats
 
-    ani = FuncAnimation(fig, animate, frames=600, interval=16, blit=True)
+    ani = FuncAnimation(fig, animate, frames=100, interval=1, blit=True)
     plt.show()
 
 

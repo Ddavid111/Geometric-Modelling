@@ -1,4 +1,7 @@
+# Third-party library
 import numpy as np
+
+# Saját modulok
 from physics import find_curve_collision, reflect_velocity, calculate_normal
 
 class BouncingPoint:

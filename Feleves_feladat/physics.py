@@ -1,4 +1,7 @@
+# Third-party library
 import numpy as np
+
+# Saját modulok
 from bezier import bezier_curve, bezier_derivative
 
 SAMPLE_RESOLUTION = 1000  # Globális konstans a mintavételezéshez

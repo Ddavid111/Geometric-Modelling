@@ -4,7 +4,7 @@ import numpy as np
 # Saját modulok
 from bezier import bezier_curve, bezier_derivative
 
-SAMPLE_RESOLUTION = 1000  # Globális konstans a mintavételezéshez
+SAMPLE_RESOLUTION = 500  # Globális konstans a mintavételezéshez
 COLLISION_THRESHOLD = 0.1  # Ütközési küszöb
 
 def find_curve_collision(start_pos, end_pos, control_points, samples=SAMPLE_RESOLUTION):

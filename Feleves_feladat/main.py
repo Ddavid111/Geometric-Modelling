@@ -1,5 +1,6 @@
 # Standard library
 import json
+import time
 
 # Third-party library
 import numpy as np
@@ -17,6 +18,8 @@ def main():
     Elindítja a Bézier-görbén pattogó pont animációját.
     A kontrollpontokat JSON fájlból olvassa be.
     """
+
+    start_time = time.time()
 
     with open("Feleves_feladat/control_points.json", "r") as f:
         data = json.load(f)
@@ -59,6 +62,9 @@ def main():
     ani = FuncAnimation(fig, animate, frames=100, interval=1, blit=True)
     plt.show()
 
+    end_time = time.time()  # Az animáció futásának vége
+    elapsed_time = end_time - start_time  # Különbség kiszámítása
+    print(f"Az animáció futási ideje: {elapsed_time:.2f} másodperc.")
 
 if __name__ == "__main__":
     main()
